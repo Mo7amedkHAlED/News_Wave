@@ -15,7 +15,7 @@ News App is a simple iOS application, it retrieves news from free API [newsapi.o
 
 | Home | More Details     | Search     |
 | :-------- | :------- | :-------     |
-| <img src="/Screenshots/Home.png" width="200" height="400">        | <img src="/Screenshots/More Details.png" width="200" height="400">       | <img src="/Screenshots/Search.png" width="200" height="400">       |
+| ![Home](https://github.com/Mo7amedkHAlED/News_Wave/assets/101609008/395bdbbe-adcb-46bd-94b6-416c242824ce)       | <img src="/Screenshots/More Details.png" width="200" height="400">       | <img src="/Screenshots/Search.png" width="200" height="400">       |
 
 | Head Lines |
 | :-------- | 
