@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct NewsRequestParameters: Encodable {
+    let search: String
+    let pageSize: Int
+    let language: String
+    let apiKey: String
+}

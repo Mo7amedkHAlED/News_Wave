@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol HomeRepoProtocol {
+    func fetchData(pageSize: Int, page: Int, search: String) async throws -> NewsModel
+}

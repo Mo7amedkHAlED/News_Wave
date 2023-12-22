@@ -8,47 +8,39 @@
 import SwiftUI
 
 struct HeadlineView: View {
-    @EnvironmentObject private var vm: HomeViewModel
+    // MARK:  Varables
+    @StateObject var vm: HeadlineViewModel
     @State var isHeadline: Bool = true
-
+    
+    // MARK:  Body
     var body: some View {
-        List {
-            LazyVGrid(columns: [GridItem(), GridItem()]) {
-                ForEach(vm.newsInfo ?? [], id: \.title) { article in
-                    NewsRowView(newsInfo: article, isHeadline: $isHeadline)
-                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
-                }.frame(height: 250)
+        
+        if vm.isLoading {
+            ProgressView()
+        } else {
+            ScrollView {
+                LazyVGrid(columns: [GridItem(), GridItem()]) {
+                    ForEach(vm.headlineData ?? [], id: \.title) { article in
+                        NavigationLink(destination: DetailsView(article: article)) {
+                            NewsRowView(newsInfo: article, isHeadline: $isHeadline)
+                        }
+                        .frame(height: 260)
+                        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    }
+                    ProgressView()
+                        .onAppear {
+                            vm.loadNextPage()
+                        }
+                } .padding()
             }
+            .navigationTitle("Headline")
         }
-        .onAppear {
-            Task {
-                do {
-                    try await vm.viewDidLoad()
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-        }
-        .navigationTitle("Headline")
     }
 }
 
+// MARK:  PreviewProvider
 struct HeadlineView_Previews: PreviewProvider {
     static var previews: some View {
-        HeadlineView()
-            .environmentObject(HomeViewModel())
+        HeadlineView(vm: HeadlineViewModel())
     }
 }
-// MARK: Anther way for show data
-//List {
-//    ForEach(vm.newsInfo?.chunks(of: 2) ?? [], id: \.first?.title) { pair in
-//        HStack(spacing: 10) {
-//            ForEach(pair, id: \.title) { article in
-//                NewsRowView(newsInfo: article, isHeadline: $isHeadline)
-//                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
-//                    .frame( height: 250)
-//                    .frame(maxWidth: .infinity)
-//            }
-//        }
-//    }
-//}

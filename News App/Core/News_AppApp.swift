@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct News_AppApp: App {
+    @StateObject private var vm = HomeViewModel()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                MainView()
+            } .environmentObject(vm)
         }
     }
 }

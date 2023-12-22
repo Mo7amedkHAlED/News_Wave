@@ -9,12 +9,27 @@ import SwiftUI
 
 struct MainView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        TabView {
+            NavigationView {
+                HomeView()
+            }
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+            NavigationView {
+                HeadlineView(vm: HeadlineViewModel())
+            }
+            .tabItem {
+                Label("Headline", systemImage: "info.circle")
+            }
+        }
     }
 }
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView()
+            MainView()
+                .environmentObject(HomeViewModel())
+                .navigationTitle("Home")
     }
 }

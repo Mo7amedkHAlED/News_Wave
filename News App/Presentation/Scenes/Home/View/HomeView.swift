@@ -8,18 +8,49 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject private var vm: HomeViewModel
+    @State var isHeadline: Bool = false
     var body: some View {
-        ZStack {
-            SearchBarView(searchText: <#T##String#>)
+        ScrollView {
+            VStack {
+                if vm.isLoading {
+                    ProgressView()
+                } else {
+                    SearchBarView(searchText: $vm.searchText)
+                    Spacer()
+                    allNewsList
+                }
+            }
+            .navigationTitle("Home")
         }
-        .navigationTitle("Home")
-
-        
+    }
+    
+    private var allNewsList: some View {
+        LazyVStack (alignment: .leading) {
+            ForEach(vm.newsInfo ?? [],id: \.title) { article in
+                withAnimation(.easeOut) {
+                    NavigationLink(destination: DetailsView(article: article)) {
+                        NewsRowView(newsInfo: article, isHeadline: $isHeadline)
+                            .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                            .onAppear {
+                                if article.title == vm.newsInfo?.last?.title {
+                                    vm.loadNextPage()
+                                }
+                            }
+                    }
+                }
+            }
+            .padding(.trailing)
+            .padding(.leading)
+        }
     }
 }
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        NavigationView {
+            HomeView()
+                .environmentObject(HomeViewModel())
+        }
     }
 }

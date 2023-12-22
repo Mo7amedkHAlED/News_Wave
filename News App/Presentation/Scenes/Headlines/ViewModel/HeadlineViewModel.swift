@@ -8,28 +8,34 @@
 import Foundation
 import Combine
 
-class HeadlineViewModel {
+class HeadlineViewModel: ObservableObject {
     @Published var headlineData: [Article]?
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
+    private var pagesize: Int = 10
+    private var page: Int = 1
     var cancellables: Set<AnyCancellable> = []
     let headlineUseCase: HeadlinesUseCase
     
     init(headlineUseCase: HeadlinesUseCase = HeadlinesUseCaseImple()) {
         self.headlineUseCase = headlineUseCase
+        viewDidLoad(pageSize: pagesize)
     }
     
-    func viewDidLoad() async throws {
-        DispatchQueue.main.async { [weak self] in
-            self?.isLoading = true
-            //self?.addSubscriber()
-        }
-        try await fetchHeadlinesData()
+    func viewDidLoad(pageSize: Int) {
+        isLoading = true
+        fetchHeadlinesData(pageSize: pageSize)
     }
-    func fetchHeadlinesData(pageSize: Int = 20) async throws {
+    
+    func loadNextPage() {
+        pagesize += 10
+        fetchHeadlinesData(pageSize: pagesize)
+    }
+    
+    func fetchHeadlinesData(pageSize: Int) {
         Task {
             do {
-                let result = try await  headlineUseCase.fetchHeadLines(pageSize: pageSize)
+                let result = try await  headlineUseCase.fetchHeadLines(pageSize: pageSize, page: page)
                 DispatchQueue.main.async {[weak self] in
                     guard let self = self else {return}
                     self.headlineData = result.articles
@@ -43,8 +49,7 @@ class HeadlineViewModel {
                 }
             }
         }
-       
+        
     }
-    
 }
 

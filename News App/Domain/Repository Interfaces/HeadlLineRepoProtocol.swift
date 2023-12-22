@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol HeadlLineRepoProtocol {
+    func fetchHeadlines(pageSize: Int, page: Int) async throws -> NewsModel
+}

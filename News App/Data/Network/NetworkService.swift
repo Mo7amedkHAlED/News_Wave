@@ -7,20 +7,20 @@
 
 import Foundation
 
-protocol APIService {
-    func fetch(urlRequest: URLRequest) async throws -> Data
+protocol NetworkClientType {
+     func sendRequest<ResponseType>(request: URLRequest) async throws -> ResponseType where ResponseType: Decodable
 }
 
-class NetworkService: APIService {
-    func fetch(urlRequest: URLRequest) async throws -> Data {
+class NetworkClient: NetworkClientType {
+    func sendRequest<ResponseType>(request: URLRequest) async throws -> ResponseType where ResponseType: Decodable {
         try await withCheckedThrowingContinuation { continuation in
             // Check for internet connectivity
             guard Reachability.isConnectedToNetwork() else {
                 continuation.resume(throwing: AppError.noInternet)
                 return
             }
-            
-            let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
+
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -31,7 +31,12 @@ class NetworkService: APIService {
                     return
                 }
                 
-                continuation.resume(returning: responseData)
+                do {
+                    let decodedResponse = try JSONDecoder().decode(ResponseType.self, from: responseData)
+                    continuation.resume(returning: decodedResponse)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
             
             task.resume()
